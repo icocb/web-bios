@@ -1,38 +1,53 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>InsydeH2O Setup Utility</title>
     <style>
-        :root { --bg: #C0C0C0; --blue: #0000AA; --sel: #000080; --footer-bg: #008080; }
+        :root { --bg: #C0C0C0; --blue: #0000AA; --sel: #000080; --footer: #008080; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { background: #000; margin: 0; height: 100vh; font-family: 'Consolas', monospace; display: flex; justify-content: center; overflow: hidden; }
-        .container { background: var(--bg); width: 100%; max-width: 1200px; height: 100%; display: flex; flex-direction: column; border: 1px solid #fff; position: relative; }
-        .header { background: #808080; color: #fff; display: flex; justify-content: space-between; padding: 2px 10px; font-size: 12px; }
-        .tab { background: var(--bg); color: #000; padding: 0 15px; font-weight: bold; border-right: 1px solid #808080; }
-        .content { flex: 1; padding: 10px 15px; color: #000; font-size: 13px; line-height: 1.2; overflow-y: auto; padding-bottom: 70px; }
+        body { background: #000; margin: 0; font-family: 'Consolas', 'Courier New', monospace; color: #000; overflow: hidden; height: 100%; }
         
-        /* Стили для строк-ссылок */
-        .row { display: flex; width: 100%; padding: 6px 5px; text-decoration: none; color: inherit; border: 1px solid transparent; }
-        .row:active, .row.selected { background: var(--sel) !important; color: #fff !important; }
-        .row:active .val, .row.selected .val { color: #fff !important; }
-        
-        .label { width: 60%; }
-        .val { color: var(--blue); }
-        .section { margin-top: 12px; font-weight: bold; text-decoration: underline; color: #000; }
-        .indent { padding-left: 15px; font-size: 12px; color: #444; }
+        /* Фикс для мобильного ТГ - контейнер по высоте окна */
+        .container { 
+            background: var(--bg); border: 1px solid #fff;
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            display: flex; flex-direction: column; 
+        }
 
-        .footer { background: var(--footer-bg); color: #fff; display: grid; grid-template-columns: repeat(2, 1fr); padding: 8px 10px; font-size: 10px; border-top: 1px solid #fff; position: absolute; bottom: 0; width: 100%; z-index: 10; }
-        .footer b { color: #ffff55; margin-right: 3px; }
+        .header { background: #808080; color: #fff; display: flex; justify-content: space-between; padding: 2px 10px; font-size: 12px; }
+        .tab { background: var(--bg); color: #000; padding: 0 10px; font-weight: bold; border-right: 1px solid #808080; }
         
-        #err { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; z-index: 100; justify-content: center; align-items: center; }
-        #err-box { background: #0066FF; border: 2px solid #fff; padding: 20px; color: #fff; text-align: center; box-shadow: 10px 10px 0 #000; }
+        .content { flex: 1; padding: 10px; overflow-y: auto; padding-bottom: 60px; }
+        
+        /* Ссылка теперь - полноценный блок на всю ширину */
+        .bio-link { 
+            display: flex; width: 100%; padding: 10px 5px; 
+            text-decoration: none; color: inherit; border: 1px solid transparent;
+        }
+        .bio-link:active { background: var(--sel) !important; color: #fff !important; }
+        .bio-link:active .val { color: #fff !important; }
+
+        .label { width: 60%; }
+        .val { color: var(--blue); font-weight: bold; }
+        .section { margin-top: 15px; font-weight: bold; text-decoration: underline; background: #a0a0a0; padding: 2px 5px; }
+
+        .footer { 
+            background: var(--footer); color: #fff; 
+            display: grid; grid-template-columns: repeat(2, 1fr); 
+            padding: 8px 10px; font-size: 10px; border-top: 2px solid #fff;
+            position: absolute; bottom: 0; width: 100%;
+        }
+        .footer b { color: #ffff55; }
+
+        #err { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; z-index: 1000; justify-content: center; align-items: center; }
+        #err-box { background: #0066FF; border: 2px solid #fff; padding: 20px; color: #fff; text-align: center; box-shadow: 8px 8px 0 #000; }
     </style>
 </head>
 <body onclick="initAudio()">
 
-<div id="err" onclick="this.style.display='none'"><div id="err-box"><b>No Boot Device</b><br><br>[OK]</div></div>
+<div id="err" onclick="this.style.display='none'"><div id="err-box"><b>No Boot Device</b><br><br>[ OK ]</div></div>
 
 <div class="container">
     <div class="header">
@@ -42,77 +57,59 @@
     </div>
 
     <div class="content">
-        <div class="row"><div class="label">Language</div><div class="val">&lt;English&gt;</div></div>
-        <div class="row"><div class="label">Time Setting</div><div class="val" id="time">[00:00:00]</div></div>
+        <div class="bio-link" style="cursor:default"><div class="label">Time</div><div class="val" id="time">[00:00:00]</div></div>
+        
+        <div class="section">Links & Socials (TAP TO OPEN)</div>
+        <a href="https://t.me/iicocb" target="_blank" class="bio-link"><div class="label">▶ Telegram Channel</div><div class="val">&lt;ENTER&gt;</div></a>
+        <a href="https://steamcommunity.com/id/cocb/" target="_blank" class="bio-link"><div class="label">▶ Steam Profile</div><div class="val">&lt;ENTER&gt;</div></a>
+        <a href="https://namemc.com/cocb" target="_blank" class="bio-link"><div class="label">▶ NameMC Identity</div><div class="val">&lt;ENTER&gt;</div></a>
 
-        <div class="section">Links & Socials (Tap to Open)</div>
-        <a href="https://t.me/iicocb" target="_blank" class="row selectable"><div class="label">▶ Telegram Channel</div><div class="val">&lt;Open&gt;</div></a>
-        <a href="https://steamcommunity.com/id/cocb/" target="_blank" class="row selectable"><div class="label">▶ Steam Profile</div><div class="val">&lt;Open&gt;</div></a>
-        <a href="https://namemc.com/cocb" target="_blank" class="row selectable"><div class="label">▶ NameMC Identity</div><div class="val">&lt;Open&gt;</div></a>
-
-        <div class="section">Platform Information</div>
-        <div class="row"><div class="label">Product Name</div><div class="val">NBLK-WAX9X</div></div>
-        <div class="row"><div class="label">Serial Number</div><div class="val">NWJPM20306000145</div></div>
-        <div class="row"><div class="label">UUID</div><div class="val" style="font-size: 9px;">A18863E0-FF52-4F93-A3C1-65EEF5525BC6</div></div>
-
-        <div class="section">Advanced Settings</div>
-        <div class="row"><div class="label">PXE Boot</div><div class="val">&lt;Enable&gt;</div></div>
-        <div class="row"><div class="label">Virtualization</div><div class="val">&lt;Enable&gt;</div></div>
-        <div class="row"><div class="label">USB Port Enable</div><div class="val">&lt;Enable&gt;</div></div>
+        <div class="section">Platform Info</div>
+        <div class="bio-link" style="cursor:default"><div class="label">Product Name</div><div class="val">NBLK-WAX9X</div></div>
+        <div class="bio-link" style="cursor:default"><div class="label">CPU</div><div class="val">Ryzen 5 3500U</div></div>
+        
+        <div class="section">Advanced</div>
+        <div class="bio-link" onclick="document.getElementById('err').style.display='flex'"><div class="label">Boot Device Priority</div><div class="val">&lt;HDD&gt;</div></div>
+        <div class="bio-link"><div class="label">Secure Boot</div><div class="val">&lt;Enabled&gt;</div></div>
     </div>
 
     <div class="footer">
-        <span><b>F1</b> Help</span><span><b>Enter</b> Select</span>
-        <span><b>Esc</b> Exit</span><span><b>F10</b> Save</span>
+        <span><b>TAP</b> to Select/Open</span>
+        <span><b>F10</b> Save and Exit</span>
     </div>
 </div>
 
 <script>
     let audioCtx;
-    function initAudio() { if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
-    
-    function beep() {
+    function initAudio() {
+        if(!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            beep(1000, 0.05); // Подтверждаем включение звука писком
+        }
+    }
+
+    function beep(freq, dur) {
         if(!audioCtx) return;
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
-        osc.type = 'square'; osc.frequency.value = 800;
-        gain.gain.value = 0.03;
+        osc.type = 'square'; osc.frequency.value = freq;
+        gain.gain.value = 0.05;
         osc.connect(gain); gain.connect(audioCtx.destination);
-        osc.start(); osc.stop(audioCtx.currentTime + 0.05);
+        osc.start(); osc.stop(audioCtx.currentTime + dur);
     }
 
-    // Обработка времени
+    // Время
     setInterval(() => {
         document.getElementById('time').innerText = `[${new Date().toLocaleTimeString('en-GB')}]`;
     }, 1000);
 
-    // Управление для ПК
-    const items = document.querySelectorAll('.selectable');
-    let idx = 0;
-    
-    document.addEventListener('keydown', (e) => {
-        initAudio();
-        if (e.key === 'ArrowDown') {
-            items[idx].classList.remove('selected');
-            idx = (idx + 1) % items.length;
-            items[idx].classList.add('selected');
-            beep();
-        } else if (e.key === 'ArrowUp') {
-            items[idx].classList.remove('selected');
-            idx = (idx - 1 + items.length) % items.length;
-            items[idx].classList.add('selected');
-            beep();
-        } else if (e.key === 'Enter') {
-            items[idx].click();
-        } else if (e.key === 'F10') {
-            document.getElementById('err').style.display = 'flex';
-        }
+    // Обработка писка для всех ссылок
+    document.querySelectorAll('.bio-link').forEach(link => {
+        link.addEventListener('touchstart', () => {
+            initAudio();
+            beep(800, 0.05);
+        });
     });
-
-    // Для мобилок: звук при тапе на ссылку
-    items.forEach(el => el.addEventListener('touchstart', () => { initAudio(); beep(); }));
-
-    items[0].classList.add('selected');
 </script>
 </body>
 </html>
