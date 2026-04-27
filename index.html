@@ -6,27 +6,33 @@
     <title>InsydeH2O Setup Utility</title>
     <style>
         :root { --bg: #C0C0C0; --blue: #0000AA; --sel: #000080; --footer-bg: #008080; }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { background: #000; margin: 0; height: 100vh; font-family: 'Consolas', monospace; display: flex; justify-content: center; overflow: hidden; }
         .container { background: var(--bg); width: 100%; max-width: 1200px; height: 100%; display: flex; flex-direction: column; border: 1px solid #fff; position: relative; }
         .header { background: #808080; color: #fff; display: flex; justify-content: space-between; padding: 2px 10px; font-size: 12px; }
         .tab { background: var(--bg); color: #000; padding: 0 15px; font-weight: bold; border-right: 1px solid #808080; }
-        .content { flex: 1; padding: 10px 15px; color: #000; font-size: 13px; line-height: 1.2; overflow-y: auto; padding-bottom: 80px; }
-        .row { display: flex; width: 100%; padding: 8px 5px; cursor: pointer; border-bottom: 1px solid rgba(0,0,0,0.05); }
-        .row.selected { background: var(--sel) !important; color: #fff !important; }
-        .selected .val { color: #fff !important; }
-        .label { width: 60%; pointer-events: none; }
-        .val { color: var(--blue); pointer-events: none; }
-        .section { margin-top: 15px; font-weight: bold; text-decoration: underline; color: #000; padding: 0 5px; }
+        .content { flex: 1; padding: 10px 15px; color: #000; font-size: 13px; line-height: 1.2; overflow-y: auto; padding-bottom: 70px; }
+        
+        /* Стили для строк-ссылок */
+        .row { display: flex; width: 100%; padding: 6px 5px; text-decoration: none; color: inherit; border: 1px solid transparent; }
+        .row:active, .row.selected { background: var(--sel) !important; color: #fff !important; }
+        .row:active .val, .row.selected .val { color: #fff !important; }
+        
+        .label { width: 60%; }
+        .val { color: var(--blue); }
+        .section { margin-top: 12px; font-weight: bold; text-decoration: underline; color: #000; }
+        .indent { padding-left: 15px; font-size: 12px; color: #444; }
+
         .footer { background: var(--footer-bg); color: #fff; display: grid; grid-template-columns: repeat(2, 1fr); padding: 8px 10px; font-size: 10px; border-top: 1px solid #fff; position: absolute; bottom: 0; width: 100%; z-index: 10; }
         .footer b { color: #ffff55; margin-right: 3px; }
-        #err { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; z-index: 1000; justify-content: center; align-items: center; }
+        
+        #err { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; z-index: 100; justify-content: center; align-items: center; }
         #err-box { background: #0066FF; border: 2px solid #fff; padding: 20px; color: #fff; text-align: center; box-shadow: 10px 10px 0 #000; }
     </style>
 </head>
-<body>
+<body onclick="initAudio()">
 
-<div id="err" ontouchstart="this.style.display='none'"><div id="err-box"><b>No Boot Device</b><br><br>[OK]</div></div>
+<div id="err" onclick="this.style.display='none'"><div id="err-box"><b>No Boot Device</b><br><br>[OK]</div></div>
 
 <div class="container">
     <div class="header">
@@ -40,75 +46,73 @@
         <div class="row"><div class="label">Time Setting</div><div class="val" id="time">[00:00:00]</div></div>
 
         <div class="section">Links & Socials (Tap to Open)</div>
-        <div class="row selectable" onclick="window.open('https://t.me/iicocb', '_blank')"><div class="label">▶ Telegram</div><div class="val">&lt;Open&gt;</div></div>
-        <div class="row selectable" onclick="window.open('https://steamcommunity.com/id/cocb/', '_blank')"><div class="label">▶ Steam</div><div class="val">&lt;Open&gt;</div></div>
-        <div class="row selectable" onclick="window.open('https://namemc.com/cocb', '_blank')"><div class="label">▶ NameMC</div><div class="val">&lt;Open&gt;</div></div>
+        <a href="https://t.me/iicocb" target="_blank" class="row selectable"><div class="label">▶ Telegram Channel</div><div class="val">&lt;Open&gt;</div></a>
+        <a href="https://steamcommunity.com/id/cocb/" target="_blank" class="row selectable"><div class="label">▶ Steam Profile</div><div class="val">&lt;Open&gt;</div></a>
+        <a href="https://namemc.com/cocb" target="_blank" class="row selectable"><div class="label">▶ NameMC Identity</div><div class="val">&lt;Open&gt;</div></a>
 
         <div class="section">Platform Information</div>
         <div class="row"><div class="label">Product Name</div><div class="val">NBLK-WAX9X</div></div>
-        <div class="row"><div class="label">Serial</div><div class="val">NWJPM20306000145</div></div>
-        
+        <div class="row"><div class="label">Serial Number</div><div class="val">NWJPM20306000145</div></div>
+        <div class="row"><div class="label">UUID</div><div class="val" style="font-size: 9px;">A18863E0-FF52-4F93-A3C1-65EEF5525BC6</div></div>
+
         <div class="section">Advanced Settings</div>
-        <div class="row selectable" ontouchstart="this.classList.toggle('selected')"><div class="label">Secure Boot</div><div class="val">&lt;Enable&gt;</div></div>
-        <div class="row selectable" ontouchstart="this.classList.toggle('selected')"><div class="label">Virtualization</div><div class="val">&lt;Enable&gt;</div></div>
+        <div class="row"><div class="label">PXE Boot</div><div class="val">&lt;Enable&gt;</div></div>
+        <div class="row"><div class="label">Virtualization</div><div class="val">&lt;Enable&gt;</div></div>
+        <div class="row"><div class="label">USB Port Enable</div><div class="val">&lt;Enable&gt;</div></div>
     </div>
 
     <div class="footer">
-        <span><b>TAP</b> Select / Open</span>
-        <span><b>F10</b> Save (Wait)</span>
+        <span><b>F1</b> Help</span><span><b>Enter</b> Select</span>
+        <span><b>Esc</b> Exit</span><span><b>F10</b> Save</span>
     </div>
 </div>
 
 <script>
-    // Обновление времени
+    let audioCtx;
+    function initAudio() { if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+    
+    function beep() {
+        if(!audioCtx) return;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'square'; osc.frequency.value = 800;
+        gain.gain.value = 0.03;
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.05);
+    }
+
+    // Обработка времени
     setInterval(() => {
         document.getElementById('time').innerText = `[${new Date().toLocaleTimeString('en-GB')}]`;
     }, 1000);
 
-    // Звук и выделение при тапе
-    const rows = document.querySelectorAll('.selectable');
-    let audioCtx;
-
-    function playBeep() {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'square';
-        osc.frequency.value = 800;
-        gain.gain.value = 0.05;
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.05);
-    }
-
-    rows.forEach(row => {
-        row.addEventListener('touchstart', function() {
-            rows.forEach(r => r.classList.remove('selected'));
-            this.classList.add('selected');
-            playBeep();
-        });
-    });
-
-    // ПК управление (стрелки + Enter)
+    // Управление для ПК
+    const items = document.querySelectorAll('.selectable');
+    let idx = 0;
+    
     document.addEventListener('keydown', (e) => {
-        const selected = document.querySelector('.row.selected') || rows[0];
-        let index = Array.from(rows).indexOf(selected);
-
+        initAudio();
         if (e.key === 'ArrowDown') {
-            rows.forEach(r => r.classList.remove('selected'));
-            rows[(index + 1) % rows.length].classList.add('selected');
-            playBeep();
+            items[idx].classList.remove('selected');
+            idx = (idx + 1) % items.length;
+            items[idx].classList.add('selected');
+            beep();
         } else if (e.key === 'ArrowUp') {
-            rows.forEach(r => r.classList.remove('selected'));
-            rows[(index - 1 + rows.length) % rows.length].classList.add('selected');
-            playBeep();
+            items[idx].classList.remove('selected');
+            idx = (idx - 1 + items.length) % items.length;
+            items[idx].classList.add('selected');
+            beep();
         } else if (e.key === 'Enter') {
-            const url = selected.getAttribute('onclick');
-            if (url) eval(url.replace('window.open(', '').replace(', \'_blank\')', '')); // Упрощенно для примера
-            else window.location.reload();
+            items[idx].click();
+        } else if (e.key === 'F10') {
+            document.getElementById('err').style.display = 'flex';
         }
     });
+
+    // Для мобилок: звук при тапе на ссылку
+    items.forEach(el => el.addEventListener('touchstart', () => { initAudio(); beep(); }));
+
+    items[0].classList.add('selected');
 </script>
 </body>
 </html>
